@@ -4,8 +4,8 @@ typedef int* vptr;
 
 class vtable
 {
-	vptr voriginal;
-	std::vector<int> vreplace;
+	vptr orig; // указатель на оригинал v-tabl'a
+	std::vector<int> copy;
 public:
 	vtable() {};
 	vtable(void* instance)
@@ -15,29 +15,29 @@ public:
 
 	void hak(void* instance)
 	{
-		voriginal = *(vptr*)instance;
-		vptr vend = voriginal - 1;
-		while (*++vend) vreplace.push_back(*vend);
-		*(vptr*)instance = (vptr)&vreplace[0];
+		orig = *(vptr*)instance;
+		vptr vend = (vptr)orig - 1;
+		while (*++vend) copy.push_back(*vend);
+		*(vptr*)instance = (vptr)&copy[0];
 	}
 
 	void replace(int index, void* func)
 	{
-		vreplace[index] = (int)func;
+		copy[index] = (int)func;
 	}
 
 	void clear(int index)
 	{
-		vreplace[index] = voriginal[index];
+		copy[index] = orig[index];
 	}
 
 	void* original(int index)
 	{
-		return (void*)voriginal[index];
+		return (void*)orig[index];
 	}
 
 	int size()
 	{
-		return vreplace.size();
+		return copy.size();
 	}
 };
