@@ -30,10 +30,11 @@ public:
 	}
 };
 
-void* myhook(int aa, int g)
+void* myhook(int arg1, int arg2)
 {
-	printf("hack function called %d %d\n",aa, g);
-	return hackFuncf(nigger.original(0))(6,5);
+	printf("hack function called %d %d\n",arg1, arg2);
+	
+	return hackFuncf(nigger.original(0))(arg1,arg2);
 }
 
 int main()
@@ -52,3 +53,21 @@ int main()
 	return 0;
 }
 
+/*
+эту функцию легко вызвать внешне, потому что она никак не взаимодейтсвует
+с экземляром класса, но что делать в обратном случае?
+перед вызовом, нужно передать адрес экземпляра класса в регистр ecx
+сделать это можно так:
+__asm mov ecx inst
+"вызов функции"
+или же использовать способ вызова __thiscall:
+typedef void* (__thiscall *hackFuncf)(void*, int, int);
+и первым аргументом передавать inst:
+hackFuncf(nigger.original(index))(inst,arg1,arg2);
+далее может возникнуть проблема с очищением стека после фунции
+а именно нам нужен ret 8, вместо ret
+решить можно с помощью __fastcall, он как раз использует ret 8
+но тогда первыми 2мя аргументами функции будут значения ecx и edx
+ecx нам как раз нужен, второй пропускаем:
+void* __fastcall myhook(void* ecx, void*, int arg1, int arg2) {...}
+*/
