@@ -1,6 +1,8 @@
 #include <iostream>
 #include "VTable.h"
 
+#define GetEsp int Esp; __asm mov Esp, esp  
+
 using namespace std;
 
 vtable nigger;
@@ -28,12 +30,13 @@ public:
 	}
 };
 
-void* __fastcall myhook(void* ecx, void* edx, int arg1, int arg2)
+void* __stdcall myhook(int arg1, int arg2)
 {
 	printf("hook called: %d, %d\n", arg1, arg2);
 
 	auto func = (void*(__thiscall*)(void*, int, int))(nigger.original(0));
-	return func(ecx, 4, 5);
+
+	return func(*nigger, 14, 5);
 }
 
 int main()
